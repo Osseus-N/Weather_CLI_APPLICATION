@@ -1,4 +1,4 @@
-package nj.weatherAPI.model;
+package nj.weatherAPI.weather_model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

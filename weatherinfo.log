@@ -43,3 +43,23 @@
 1773564545911:future San Jose Nueva Ecija
 1773564589601:current
 1773564609419:current San Jose Nueva Ecija
+1773645525414:forecast --San jose Nueva Ecija --3
+1773645531693:forecast --location "San Jose Nueva Ecija" --days 3
+1773645557736:forecast --location "San Jose Nueva Ecija" --3
+1773645576031:future --San Jose City Nueva Ecija
+1773645587014:future --location "San Jose Nueva Ecija" --days 3
+1773645651026:current Munoz Nueva Ecija
+1773645890055:help
+1773648917771:see
+1773649064422:stracktrace
+1773649070495:stacktrace
+1773649119749:see
+1773649317407:help
+1773649320732:see
+1773926098035:help
+1773926101328:see
+1773926113185:current manila
+1773926124067:future manila
+1773926130519:future manila 3
+1773926148148:future --location San Jose Nueva Ecija --days 3
+1773926159571:edit
