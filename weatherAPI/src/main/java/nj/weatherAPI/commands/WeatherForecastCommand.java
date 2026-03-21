@@ -1,11 +1,11 @@
 package nj.weatherAPI.commands;
 
+import nj.weatherAPI.app_service.ConfigManager;
 import nj.weatherAPI.client.WeatherForecastClient;
 import nj.weatherAPI.weather_model.WeatherAlertResponse;
 import nj.weatherAPI.weather_model.WeatherCurrentResponse;
 import nj.weatherAPI.weather_model.WeatherForecastResponse;
-import nj.weatherAPI.service.WeatherService;
-import org.springframework.beans.factory.annotation.Value;
+import nj.weatherAPI.weather_service.WeatherService;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -14,26 +14,29 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @ShellComponent
 public class WeatherForecastCommand {
 
-    private String apiKey;
     private final WeatherForecastClient weatherClient;
     private final WeatherService weatherService;
-
+    private final ConfigManager configmanager;
+    private final ConfigManager configManager;
 
     public  WeatherForecastCommand(WeatherForecastClient weatherForecastClient,
                                    WeatherService weatherService,
-                                   @Value("${weather.api.key}") String apiKey
-                                  ) {
+                                   ConfigManager configManager) {
+        this.configmanager = configManager;
         this.weatherClient = weatherForecastClient;
         this.weatherService = weatherService;
-        this.apiKey = apiKey;
+        this.configManager = configManager;
     }
 
     @ShellMethod(key="current", value="The current weather of a specific place")
         public String getCurrentWeather(
-                @ShellOption(defaultValue = "San Jose") String location,
-                @ShellOption(defaultValue = "no") String aqi) {
+                @ShellOption(defaultValue = ShellOption.NULL) String location){
         try {
-            WeatherCurrentResponse response = weatherClient.current(apiKey, location, aqi);
+            if(location == null){
+                location = configmanager.getDefaultLocation();
+            }
+
+            WeatherCurrentResponse response = weatherClient.current(configmanager.getApiKey(), location, "no");
             return "Location:" + location + weatherService.currentWeather(response);
         }catch (WebClientResponseException e){
             return "Error: " + e.getStatusCode() + ": " + e.getMessage();
@@ -44,14 +47,20 @@ public class WeatherForecastCommand {
 
     @ShellMethod(key="future", value="The weather forecast for the upcoming days")
     public String getFutureWeather(
-            @ShellOption(defaultValue = "San Jose") String location,
-            @ShellOption(defaultValue = "2") int days,
-            @ShellOption(defaultValue = "no") String aqi,
-            @ShellOption(defaultValue = "no") String alert
+            @ShellOption(defaultValue = ShellOption.NULL) String location,
+            @ShellOption(defaultValue = ShellOption.NULL) String days
             ){
 
         try {
-            WeatherForecastResponse response = weatherClient.forecast(apiKey, location, days, aqi, alert);
+            if (location == null || location.isBlank()) {
+                location = configmanager.getDefaultLocation();
+            }
+
+            if (days == null || days.isBlank()) {
+                days = configmanager.getDefaultDays();
+            }
+
+            WeatherForecastResponse response = weatherClient.forecast(configmanager.getApiKey(), location, Integer.valueOf(days), "no", "no");
             return weatherService.forecastWeather(response);
         }catch (WebClientResponseException e){
             return "Error: " + e.getStatusCode() + ": " + e.getMessage();
@@ -62,10 +71,14 @@ public class WeatherForecastCommand {
 
     @ShellMethod(key="alerts", value="The weather alerts ")
     public String getAlerts(
-            @ShellOption(defaultValue = "San Jose") String location
+            @ShellOption(defaultValue = ShellOption.NULL) String location
     ){
         try{
-            WeatherAlertResponse alert = weatherClient.alert(apiKey, location);
+            if (location == null || location.isBlank()) {
+                location = configmanager.getDefaultLocation();
+            }
+
+            WeatherAlertResponse alert = weatherClient.alert(configManager.getApiKey(), location);
             return weatherService.alertWeather(alert);
         }catch (WebClientResponseException e){
             return "Error: " + e.getStatusCode() + ": " + e.getMessage();

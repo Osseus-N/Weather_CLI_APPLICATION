@@ -1,11 +1,10 @@
-package nj.weatherAPI.service;
+package nj.weatherAPI.weather_service;
 
 import nj.weatherAPI.weather_model.WeatherAlertResponse;
 import nj.weatherAPI.weather_model.WeatherCurrentResponse;
 import nj.weatherAPI.weather_model.WeatherForecastResponse;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,6 +33,10 @@ public class WeatherService {
         List<WeatherForecastResponse.ForecastDay> forecasts = response.forecast().forecastDays();
 
         StringBuilder result = new StringBuilder();
+
+        result.append("Location: ");
+        result.append(response.location().name());
+        result.append("\n");
 
         forecasts.forEach(forecast -> {
             result.append(
