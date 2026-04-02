@@ -18,5 +18,7 @@ target/
 .DS_Store
 Thumbs.db
 
+##Log##
+.logs
 ### Keep the Maven Wrapper (Optional but Recommended) ###
 # (We don't ignore .mvn/ so others can build your app easily)
